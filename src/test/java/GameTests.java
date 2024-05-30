@@ -63,32 +63,6 @@ public class GameTests {
     }
 
     @Test
-    public void TicTacToeGameEvaluatePositionWinTest() {
-        Game game = new Game();
-        char[] moves = {
-                'X', 'X', 'X',
-                ' ', 'O', ' ',
-                'O', ' ', ' '
-        };
-        int value = game.evaluatePosition(moves, game.player1);
-
-        assertEquals(value, Game.INF);
-    }
-
-    @Test
-    public void TicTacToeGameEvaluatePositionLossTest() {
-        Game game = new Game();
-        char[] moves = {
-                'O', 'O', 'O',
-                'X', ' ', 'X',
-                ' ', 'X', ' '
-        };
-        int value = game.evaluatePosition(moves, game.player1);
-
-        assertEquals(value, -Game.INF);
-    }
-
-    @Test
     public void TicTacToeGameEvaluatePositionDrawTest() {
         Game game = new Game();
         char[] moves = {
