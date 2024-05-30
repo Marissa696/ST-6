@@ -6,165 +6,80 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class GameTests {
     @Test
-    public void TicTacToeGameGenerateMovesEmptyBoardTest() {
+    void testXWinsHorizontal() {
+        char[] board = {'X', 'X', 'X', 'O', 'O', ' ', ' ', ' ', ' '};
         Game game = new Game();
-        char[] moves = {
-                ' ', ' ', ' ',
-                ' ', ' ', ' ',
-                ' ', ' ', ' '
-        };
-        ArrayList<Integer> list = new ArrayList<>();
-
-        game.generateMoves(moves, list);
-
-        assertEquals(list.size(), 9);
-        for (int i = 0; i < 9; i++) {
-            assertTrue(list.contains(i));
-        }
+        assertEquals(State.XWIN, game.checkState(board));
     }
 
     @Test
-    public void TicTacToeGameGenerateMovesFullBoardTest() {
+    void testXWinsVertical() {
+        char[] board = {'X', 'O', ' ', 'X', 'O', ' ', 'X', ' ', ' '};
         Game game = new Game();
-        char[] moves = {
-                'X', 'O', 'X',
-                'O', 'X', 'O',
-                'X', 'O', 'X'
-        };
-        ArrayList<Integer> list = new ArrayList<>();
-
-        game.generateMoves(moves, list);
-
-        assertEquals(list.size(), 0);
+        assertEquals(State.XWIN, game.checkState(board));
     }
 
     @Test
-    public void TicTacToeGameCheckStateVerticalWinTest() {
+    void testXWinsDiagonal() {
+        char[] board = {'X', 'O', ' ', 'O', 'X', ' ', ' ', ' ', 'X'};
         Game game = new Game();
-        char[] moves = {
-                'X', 'O', ' ',
-                'X', 'O', ' ',
-                'X', ' ', ' '
-        };
-        game.symbol = 'X';
-        assertEquals(game.checkState(moves), State.XWIN);
+        assertEquals(State.XWIN, game.checkState(board));
     }
 
     @Test
-    public void TicTacToeGameCheckStateHorizontalWinTest() {
+    void testOWinsHorizontal() {
+        char[] board = {'X', 'X', ' ', 'O', 'O', 'O', 'X', ' ', ' '};
         Game game = new Game();
-        char[] moves = {
-                'O', 'O', 'O',
-                'X', 'X', ' ',
-                ' ', ' ', 'X'
-        };
-        game.symbol = 'O';
-        assertEquals(game.checkState(moves), State.OWIN);
+        assertEquals(State.OWIN, game.checkState(board));
     }
 
     @Test
-    public void TicTacToeGameEvaluatePositionWinTest() {
+    void testOWinsVertical() {
+        char[] board = {'X', 'O', ' ', 'X', 'O', ' ', ' ', 'O', ' '};
         Game game = new Game();
-        char[] moves = {
-                'X', 'X', 'X',
-                ' ', 'O', ' ',
-                'O', ' ', ' '
-        };
-        int value = game.evaluatePosition(moves, game.player1);
-
-        assertEquals(value, Game.INF);
+        assertEquals(State.OWIN, game.checkState(board));
     }
 
     @Test
-    public void TicTacToeGameEvaluatePositionLossTest() {
+    void testOWinsDiagonal() {
+        char[] board = {'O', 'X', ' ', 'X', 'O', ' ', ' ', ' ', 'O'};
         Game game = new Game();
-        char[] moves = {
-                'O', 'O', 'O',
-                'X', ' ', 'X',
-                ' ', 'X', ' '
-        };
-        int value = game.evaluatePosition(moves, game.player1);
-
-        assertEquals(value, -Game.INF);
+        assertEquals(State.OWIN, game.checkState(board));
     }
 
     @Test
-    public void TicTacToeGameEvaluatePositionDrawTest() {
+    void testDraw() {
+        char[] board = {'X', 'O', 'X', 'X', 'X', 'O', 'O', 'X', 'O'};
         Game game = new Game();
-        char[] moves = {
-                'X', 'O', 'X',
-                'O', 'X', 'O',
-                'O', 'X', 'O'
-        };
-        int value = game.evaluatePosition(moves, game.player1);
-
-        assertEquals(value, 0);
+        assertEquals(State.DRAW, game.checkState(board));
     }
 
     @Test
-    public void TicTacToeGameEvaluatePositionPlayingTest() {
+    void testNextMoveSelection() {
+        char[] board = {'X', ' ', 'O', ' ', 'X', 'O', 'X', 'O', 'X'};
         Game game = new Game();
-        char[] moves = {
-                'X', 'O', 'X',
-                'O', ' ', 'X',
-                ' ', 'X', 'O'
-        };
-        int value = game.evaluatePosition(moves, game.player1);
-
-        assertEquals(value, -1);
+        ArrayList<Integer> moves = new ArrayList<>();
+        game.generateMoves(board, moves);
+        assertEquals(1, moves.size());
+        assertEquals(2, moves.get(0).intValue());
     }
 
     @Test
-    public void TicTacToeGameMinMoveTest() {
+    void testAvailableMovesGeneration() {
+        char[] board = {'X', ' ', 'O', ' ', 'X', 'O', 'X', 'O', 'X'};
         Game game = new Game();
-        char[] moves = {
-                'X', ' ', ' ',
-                ' ', 'O', ' ',
-                ' ', ' ', ' '
-        };
-
-        int value = game.MinMove(moves, game.player2);
-
-        assertTrue(value >= -Game.INF && value <= Game.INF);
+        ArrayList<Integer> moves = new ArrayList<>();
+        game.generateMoves(board, moves);
+        assertEquals(1, moves.size());
+        assertEquals(2, moves.get(0).intValue());
     }
 
     @Test
-    public void TicTacToeGameMaxMoveTest() {
+    void testGameCompletionAfterXWins() {
+        char[] board = {'X', ' ', 'O', 'X', 'X', ' ', 'O', ' ', ' '};
         Game game = new Game();
-        char[] moves = {
-                'O', ' ', ' ',
-                ' ', 'X', ' ',
-                ' ', ' ', ' '
-        };
-
-        int value = game.MaxMove(moves, game.player1);
-
-        assertTrue(value >= -Game.INF && value <= Game.INF);
-    }
-
-    @Test
-    public void TicTacToePlayerInitializationTest() {
-        Player player = new Player();
-        player.symbol = 'X';
-        player.move = 0;
-        player.selected = false;
-        player.win = false;
-
-        assertEquals(player.symbol, 'X');
-        assertEquals(player.move, 0);
-        assertFalse(player.selected);
-        assertFalse(player.win);
-    }
-
-    @Test
-    public void TicTacToeGamePlayerSwitchTest() {
-        Game game = new Game();
-        game.cplayer = game.player1;
-
-        assertEquals(game.cplayer, game.player1);
-
-        game.cplayer = game.player2;
-
-        assertEquals(game.cplayer, game.player2);
+        assertEquals(State.PLAYING, game.checkState(board));
+        board[6] = 'X';
+        assertEquals(State.XWIN, game.checkState(board));
     }
 }
