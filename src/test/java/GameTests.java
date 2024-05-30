@@ -5,114 +5,108 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GameTests {
-    @Test
-    @DisplayName("Check if player symbols are initialized")
-    void checkPlayerSymbolsInitialization() {
-        Game game = new Game();
-        assertNotNull(game.player1.symbol);
-        assertNotNull(game.player2.symbol);
-        assertNotEquals(game.player1.symbol, game.player2.symbol);
+    private static Game game;
+
+    @BeforeAll
+    private static void initializeGame() {
+        game = new Game();
     }
 
     @Test
-    @DisplayName("Check if game board is initialized with empty cells")
-    void checkEmptyBoardInitialization() {
-        Game game = new Game();
-        for (char cell : game.board) {
-            assertEquals(' ', cell);
+    @DisplayName("O Win test")
+    public void checkOWin() {
+        char[] board = {
+            'O', ' ', ' ',
+            ' ', 'O', ' ',
+            'X', 'X', 'O'
+        };
+
+        assertEquals(game.checkState(board), State.OWIN);
+    }
+
+    @Test
+    @DisplayName("Evaluate X Win position test")
+    public void checkEvaluateXWinPosition() {
+        char[] board = {
+            'X', ' ', ' ',
+            ' ', 'X', ' ',
+            ' ', ' ', 'X'
+        };
+
+        assertEquals(game.evaluatePosition(board, game.player1), Game.INF);
+    }    
+
+    @Test
+    @DisplayName("Init test")
+    public void checkInitStates() {
+        assertEquals(game.state, State.PLAYING);
+        assertEquals(game.player1.symbol, 'X');
+        assertEquals(game.player2.symbol, 'O');
+        assertEquals(game.board.length, 9);
+    }
+
+    @Test
+    @DisplayName("Evaluate Draw position test")
+    public void checkEvaluateDrawPosition() {
+        char[] board = {
+            'X', 'O', 'X',
+            'X', 'X', 'O',
+            'O', 'X', 'O'
+        };
+
+        assertEquals(game.evaluatePosition(board, game.player1), 0);
+    }
+
+    @Test
+    @DisplayName("Full moves test")
+    public void checkGenerateFullMoves() {
+        char[] board = {
+            ' ', ' ', ' ',
+            ' ', ' ', ' ',
+            ' ', ' ', ' '
+        };
+        ArrayList<Integer> result = new ArrayList<>();
+
+        game.generateMoves(board, result);
+
+        for (int i = 0; i < 9; i++) {
+            assertEquals(i, result.get(i));
         }
     }
 
     @Test
-    @DisplayName("Check if board size is correct")
-    void checkBoardSize() {
-        Game game = new Game();
-        assertEquals(9, game.board.length);
-    }
-
-    @Test
-    @DisplayName("Check if generating moves on a full board returns no moves")
-    void checkGenerateMovesOnFullBoard() {
+    @DisplayName("X Win test")
+    public void checkXWin() {
         char[] board = {
-                'X', 'O', 'X',
-                'O', 'X', 'O',
-                'X', 'O', 'X'
-        };
-        ArrayList<Integer> result = new ArrayList<>();
-
-        Game game = new Game();
-        game.generateMoves(board, result);
-
-        assertEquals(0, result.size());
-    }
-
-    @Test
-    @DisplayName("Check if Minimax algorithm returns a valid move on a random board")
-    void checkMinimaxOnRandomBoard() {
-        char[] board = {
-                'X', ' ', ' ',
-                'O', 'X', ' ',
-                ' ', ' ', 'O'
+            'X', 'O', 'O',
+            ' ', 'X', ' ',
+            ' ', ' ', 'X'
         };
 
-        Game game = new Game();
-        int move = game.MiniMax(board, game.player1);
-
-        assertTrue(move >= 0 && move < 9);
-        assertEquals('X', game.board[move]);
+        assertEquals(game.checkState(board), State.XWIN);
     }
 
     @Test
-    @DisplayName("Check if player can make a move on an empty cell")
-    void checkPlayerMoveOnEmptyCell() {
-        TicTacToeCell cell = new TicTacToeCell(1, 0, 0);
-        assertFalse(cell.getMarker() == 'X' || cell.getMarker() == 'O');
-    }
-
-    @Test
-    @DisplayName("Check if setting marker changes cell state")
-    void checkSettingMarkerChangesCellState() {
-        TicTacToeCell cell = new TicTacToeCell(1, 0, 0);
-        cell.setMarker("X");
-        assertTrue(cell.getMarker() == 'X');
-        assertFalse(cell.isEnabled());
-    }
-
-    @Test
-    @DisplayName("Check if evaluatePosition returns infinity for winning position")
-    void checkEvaluatePositionForWinningPosition() {
+    @DisplayName("Draw test")
+    public void checkDraw() {
         char[] board = {
-                'X', 'X', 'X',
-                'O', 'O', ' ',
-                ' ', ' ', ' '
+            'X', 'O', 'X',
+            'X', 'X', 'O',
+            'O', 'X', 'O'
         };
 
-        Game game = new Game();
-        game.symbol = 'X';
-
-        assertEquals(Game.INF, game.evaluatePosition(board, game.player1));
+        assertEquals(game.checkState(board), State.DRAW);
     }
 
     @Test
-    @DisplayName("Check if evaluatePosition returns zero for draw position")
-    void checkEvaluatePositionForDrawPosition() {
+    @DisplayName("MiniMax test")
+    public void checkMiniMax() {
         char[] board = {
-                'X', 'O', 'X',
-                'X', 'O', 'O',
-                'O', 'X', 'X'
+            'X', ' ', ' ',
+            ' ', ' ', ' ',
+            ' ', ' ', 'O'
         };
 
-        Game game = new Game();
-
-        assertEquals(0, game.evaluatePosition(board, game.player1));
-    }
-
-    @Test
-    @DisplayName("Check if GameState is PLAYING after player's move")
-    void checkGameStateAfterPlayerMove() {
-        Game game = new Game();
-        TicTacToePanel panel = new TicTacToePanel(new GridLayout(3, 3));
-        panel.cells[0].doClick();
-        assertEquals(State.PLAYING, game.state);
+        assertEquals(game.MiniMax(board, game.player2), 2);
     }
 }
